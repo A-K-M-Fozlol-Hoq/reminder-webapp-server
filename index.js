@@ -87,14 +87,22 @@ client.connect((err) => {
   cron.schedule('* * * * *', async () => {
     try {
       const thisTime = new Date();
-      console.log(thisTime);
+      let t2 =
+        thisTime.getFullYear() +
+        '-' +
+        thisTime.getMonth() +
+        '-' +
+        thisTime.getDay() +
+        '-' +
+        thisTime.getHours() +
+        '-' +
+        thisTime.getMinutes();
       reminderCollection
         .find({
-          reminderTime: thisTime,
+          reminderTime: t2,
         })
         .toArray()
         .then(async (response) => {
-          console.log(response);
           response.map(async (resp) => {
             // sending reminder our user by email
             var transporter = nodemailer.createTransport({
@@ -107,16 +115,16 @@ client.connect((err) => {
 
             var mailOptions = {
               from: process.env.EMAIL,
-              to: sendTo,
+              to: resp.ownerEmail,
               subject: 'Remind from Tweetsy ',
-              text: `Text: ${resp.text}`,
+              text: `Text: ${resp.reminderText}`,
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
               if (error) {
-                res.send('err' + error);
+                console.log(error, '125');
               } else {
-                res.send(info);
+                console.log(info, '127');
               }
             });
 
